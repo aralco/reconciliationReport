@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd" >
+    <context:annotation-config />
+    <context:component-scan base-package="com.spigit.citi"/>
+
+
+    <!--********** Spring Data Source **********-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <context:property-placeholder location="database.properties,email.properties"/>
+
+    <!--********** SessionFactory **********-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.spigit.citi.model" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.jdbc.batch_size">20</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.connection.SetBigStringTryClob">true</prop>
+            </props>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>com.spigit.citi.model.ReconciliationReportLog</value>
+                <value>com.spigit.citi.model.TransactionQueryHistory</value>
+                <value>com.spigit.citi.model.TransactionQueue</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--********** TransactionManager **********-->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--********** ReconciliationReportService **********-->
+    <bean id="reconciliationReportService" class="com.spigit.citi.service.ReconciliationReportService">
+        <property name="emailService" ref="emailService"/>
+    </bean>
+
+    <!--********** EmailService **********-->
+    <bean id="emailService" class="com.spigit.citi.service.EmailService">
+        <property name="javaMailSender" ref="mailSender"/>
+        <property name="envelopeFrom" value="${email.envelopeFrom}"/>
+        <property name="envelopeTo" value="${email.envelopeTo}"/>
+        <property name="subject" value="${email.reconciliation.subject}"/>
+        <property name="message" value="${email.reconciliation.body}"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--********** TransactionQueueDaoImpl **********-->
+    <bean id="transactionQueueDao" class="com.spigit.citi.dao.TransactionQueueDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--********** TransactionQueryDaoImpl **********-->
+    <bean id="transactionQueryHistoryDao" class="com.spigit.citi.dao.TransactionQueryHistoryDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--********** ReconciliationReportLogDaoImpl **********-->
+    <bean id="reconciliationReportLogDao" class="com.spigit.citi.dao.ReconciliationReportLogDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+
+    <!--********** JavaMailSender **********-->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${email.smtp.host}"/>
+        <property name="port" value="${email.smtp.port}"/>
+        <property name="username" value="${email.username}"/>
+        <property name="password" value="${email.password}" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+
+    </bean>
+
+</beans>

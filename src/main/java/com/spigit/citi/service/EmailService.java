@@ -152,9 +152,8 @@ public class EmailService  {
         try {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
             messageHelper.setFrom(new InternetAddress(envelopeFrom));
-            //messageHelper.setTo(formatEmailRecipients(envelopeTo));
-            messageHelper.setTo(InternetAddress.parse(envelopeTo,true));//added
-            messageHelper.setValidateAddresses(true);//added
+            messageHelper.setTo(InternetAddress.parse(envelopeTo,true));
+            messageHelper.setValidateAddresses(true);
             messageHelper.setSubject(subject+" "+formatter.format(date));
             messageHelper.setSentDate(date);
             messageHelper.setText(message, true);
@@ -187,14 +186,6 @@ public class EmailService  {
             }
         }
         return reportLog;
-    }
-
-    private InternetAddress[] formatEmailRecipients(String email) throws AddressException {
-        String [] emails = email.split(",");
-        InternetAddress[] emailRecipients = new InternetAddress[emails.length];
-        for(int i=0;i<emails.length;i++)
-            emailRecipients[i] = new InternetAddress(emails[i].trim());
-        return emailRecipients;
     }
 
     private Blob createMessageBlob(String message)    {

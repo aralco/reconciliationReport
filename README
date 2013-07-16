@@ -1,1 +1,40 @@
-This file was created by IntelliJ IDEA 12.1.4 for binding GitHub repository
+**********************************************************************
+Reconciliation Report
+**********************************************************************
+Requirements:
+    a. MySQL server 5.x installed and configured.
+    b. transactionQueueDB schema running on MySQL server.
+    c. Java SDK 1.6.0_37
+    d. Maven 3.0.x installed.
+
+Installation:
+    2. Make sure that “database.properties” file matches your database configuration.
+    3. Also make sure to check “email.properties” file, in order to allow the application send emails from and to an
+    email account. For testing purposes you can use a gmail account for the from email account. EnvelopeTo should
+    contain an email or  a comma separated list of emails to send the report.
+    4. After that you should be ready to package the ReconciliationReport. To do it you should go to the terminal console
+     and under the folder “reconciliationReport” you must run the following commands:
+        - $mvn clean
+        - $mvn package
+    5.	If execution of the above processes are successful, a “target” folder will be created under
+    reconciliationReport folder.
+    6.	Assuming you are still on “reconciliationReport ” folder run the following command in order to run
+    ReconciliationReport:
+        - $java –jar target/ReconciliationReport.one-jar.jar
+    7. In order to manually package a tarball file for production we must keep the following file structure:
+        - reconciliationReport (Folder)
+                |
+                |__ target (Folder)
+                |
+                |__ ReconciliationReport.one-jar.jar (Jar file)
+
+       Then you will be able to execute jar file as in previous step:
+        - $ java –jar target/ReconciliationReport.one-jar.jar
+    8. At this point ReconciliationReport will retrieve data from transactionQueueDB. SUCCESS/FAILURE transactions from
+    TransactionQueue table will be fetch and stored in a CSV file (see image below), the same that will be sent as
+    attachment to citi retention system via SMTP message to email(s) defined on 2.c. Also TransactionQueryHistory table
+    will be updated with queryType to RECONCILIATION value and timestamp to current date. To keep a record of reports
+    sent to citi retention system, each successfully sent message will be stored on ReconciliationReportLog table.
+
+Changes:
+    - Updated EmailService.java file.

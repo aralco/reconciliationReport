@@ -39,6 +39,7 @@ public class ReconciliationReportService extends Service {
             if(reportLog!=null)  {
                 updateReconciliationReportStatus();
                 saveReconciliationReportLog(reportLog);
+                updateReportedOnTransactionQueue(transactionQueues);
             }
         } else   {
             logger.warn("There are no transactions in queue.");
@@ -47,8 +48,8 @@ public class ReconciliationReportService extends Service {
     }
 
     private List<TransactionQueue> getTransactionQueues()   {
-        logger.info("Loading SUCCESS/FAILURE transactions.");
-        return transactionQueueDAO.getSuccessOrFailureTransactionQueues();
+        logger.info("Loading SUCCESS/FAILURE and Not Reported transactions.");
+        return transactionQueueDAO.getSuccessOrFailureAndNotReportedTransactionQueues();
     }
 
     private File assemblyReconciliationReport(List<TransactionQueue> transactionQueues) {
@@ -131,4 +132,9 @@ public class ReconciliationReportService extends Service {
         logger.info("Saving on ReconciliationReportLog table.");
         reconciliationReportLogDao.save(reportLog);
     }
+
+    private void updateReportedOnTransactionQueue(List<TransactionQueue> transactionQueues) {
+        transactionQueueDAO.updateTransactionQueues(transactionQueues);
+    }
+
 }

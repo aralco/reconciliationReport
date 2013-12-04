@@ -48,10 +48,10 @@ public class TransactionQueueDaoImpl implements TransactionQueueDao {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<TransactionQueue> getSuccessOrFailureTransactionQueues() {
+    public List<TransactionQueue> getSuccessOrFailureAndNotReportedTransactionQueues() {
         List<TransactionQueue> transactionQueueList = new ArrayList<TransactionQueue>(0);
         Session session = sessionFactory.openSession();
-        Query query = session.createQuery("from TransactionQueue where status = :status1 or status = :status2");
+        Query query = session.createQuery("from TransactionQueue where (status = :status1 or status = :status2) and reported=false");
         query.setParameter("status1",TransactionStatus.SUCCESS.name());
         query.setParameter("status2",TransactionStatus.FAILURE.name());
         transactionQueueList = (List<TransactionQueue>)query.list();
@@ -68,6 +68,7 @@ public class TransactionQueueDaoImpl implements TransactionQueueDao {
         int sequenceNumber =1;
         for(TransactionQueue transactionQueue : transactionQueueList)    {
             transactionQueue.setStatus(TransactionStatus.READY.name());
+            transactionQueue.setReported(Boolean.FALSE);
             transactionQueue.setUniqueID(formatter.format(date) + "_" + queryType.name() + "_" + sequenceNumber++);
             session.save(transactionQueue);
 
@@ -87,6 +88,7 @@ public class TransactionQueueDaoImpl implements TransactionQueueDao {
         Transaction transaction = session.beginTransaction();
         int count =1;
         for(TransactionQueue transactionQueue : transactionQueueList)    {
+            transactionQueue.setReported(Boolean.TRUE);
             session.update(transactionQueue);
             if(count%20 == 0)    {
                 session.flush();

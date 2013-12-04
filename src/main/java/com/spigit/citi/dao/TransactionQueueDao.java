@@ -11,7 +11,7 @@ public interface TransactionQueueDao {
 
     public List<TransactionQueue> getNotSuccessTransactionQueues();
 
-    public List<TransactionQueue> getSuccessOrFailureTransactionQueues();
+    public List<TransactionQueue> getSuccessOrFailureAndNotReportedTransactionQueues();
 
     public void saveTransactionQueues(List<TransactionQueue> transactionQueueList, QueryType queryType);
 

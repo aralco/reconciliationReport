@@ -23,6 +23,7 @@ public class TransactionQueue implements Serializable {
     private Date transmitTime;
     private String errorCondition;
     private String uniqueID;
+    private Boolean reported;
 
     public Long getId() {
         return id;
@@ -110,6 +111,14 @@ public class TransactionQueue implements Serializable {
 
     public void setUniqueID(String uniqueID) {
         this.uniqueID = uniqueID;
+    }
+
+    public Boolean getReported() {
+        return reported;
+    }
+
+    public void setReported(Boolean reported) {
+        this.reported = reported;
     }
 
     public String toString()    {

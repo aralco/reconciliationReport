@@ -19,6 +19,7 @@ public class TransactionQueue implements Serializable {
     @Lob
     private Blob body;
     private String title;
+    private String messageId;
     private String status;
     private Date transmitTime;
     private String errorCondition;
@@ -79,6 +80,14 @@ public class TransactionQueue implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getStatus() {

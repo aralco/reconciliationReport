@@ -73,6 +73,8 @@ public class ReconciliationReportService extends Service {
             csvWriter.append(",");
             csvWriter.append("Date");
             csvWriter.append(",");
+            csvWriter.append("Message-ID");
+            csvWriter.append(",");
             csvWriter.append("Status");
             csvWriter.append(",");
             csvWriter.append("TransmitTime");
@@ -92,6 +94,8 @@ public class ReconciliationReportService extends Service {
                 csvWriter.append(transactionQueue.getSubject());
                 csvWriter.append(",");
                 csvWriter.append(transactionQueue.getDate().toString());
+                csvWriter.append(",");
+                csvWriter.append(transactionQueue.getMessageId());
                 csvWriter.append(",");
                 csvWriter.append(transactionQueue.getStatus());
                 csvWriter.append(",");

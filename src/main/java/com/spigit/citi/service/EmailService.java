@@ -141,20 +141,22 @@ public class EmailService  {
         return transactionQueue;
     }
 
-    public ReconciliationReportLog assemblyAndSendReconciliationReportSMTPMessage(File attachment)   {
+    public ReconciliationReportLog assemblyAndSendReconciliationReportSMTPMessage(File attachment, int successCount, int failureCount)   {
         logger.info("Assembly Reconciliation Report SMTP message ");
         ReconciliationReportLog reportLog = null;
         InputStream myInputStream = null;
 
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat(MM_DD_YYYY);
+        int total = successCount+failureCount;
         MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
             messageHelper.setFrom(new InternetAddress(envelopeFrom));
-            messageHelper.setTo(InternetAddress.parse(envelopeTo,true));
+            messageHelper.setTo(InternetAddress.parse(envelopeTo));
             messageHelper.setValidateAddresses(true);
-            messageHelper.setSubject(subject+" "+formatter.format(date));
+            String test = (subject+" "+formatter.format(date)+".  Success="+successCount+"  Fail="+failureCount+"  Total="+total);
+            messageHelper.setSubject(subject+" "+formatter.format(date)+".  Success="+successCount+"  Fail="+failureCount+"  Total="+total);
             messageHelper.setSentDate(date);
             messageHelper.setText(message, true);
             messageHelper.addAttachment("ReconciliationReport_"+formatter.format(date)+".csv",attachment);

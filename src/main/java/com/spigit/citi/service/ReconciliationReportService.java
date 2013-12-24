@@ -24,6 +24,10 @@ public class ReconciliationReportService extends Service {
     @Autowired
     private ReconciliationReportLogDao reconciliationReportLogDao;
     private EmailService emailService;
+    private String successStatus = "SUCCESS";
+    private String failureStatus = "FAILURE";
+    private int successStatusCount;
+    private int failureStatusCount;
 
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
@@ -81,6 +85,8 @@ public class ReconciliationReportService extends Service {
             csvWriter.append(",");
             csvWriter.append("ErrorCondition");
             csvWriter.append("\n");
+            
+            successStatusCount = failureStatusCount = 0;
 
             for(TransactionQueue transactionQueue : transactionQueues)  {
                 csvWriter.append(transactionQueue.getId().toString());
@@ -98,6 +104,16 @@ public class ReconciliationReportService extends Service {
                 csvWriter.append(transactionQueue.getMessageId());
                 csvWriter.append(",");
                 csvWriter.append(transactionQueue.getStatus());
+                
+                if (successStatus.equals(transactionQueue.getStatus().toString()))
+                {
+                    successStatusCount = ++successStatusCount;
+                }
+                else if (failureStatus.equals(transactionQueue.getStatus().toString()))
+                    {
+                        failureStatusCount = ++failureStatusCount;                    
+                    }
+                                  
                 csvWriter.append(",");
                 csvWriter.append(transactionQueue.getTransmitTime().toString());
                 csvWriter.append(",");
@@ -124,7 +140,7 @@ public class ReconciliationReportService extends Service {
 
     private ReconciliationReportLog assemblyAndSendSMTPMessage(File attachment) {
         logger.info("Send SMTP message with CSV report as attachment.");
-        return emailService.assemblyAndSendReconciliationReportSMTPMessage(attachment);
+        return emailService.assemblyAndSendReconciliationReportSMTPMessage(attachment, successStatusCount, failureStatusCount);
     }
 
     private void updateReconciliationReportStatus()  {

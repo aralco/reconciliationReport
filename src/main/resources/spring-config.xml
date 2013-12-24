@@ -87,12 +87,12 @@
         <property name="port" value="${email.smtp.port}"/>
         <property name="username" value="${email.username}"/>
         <property name="password" value="${email.password}" />
-        <property name="javaMailProperties">
-            <props>
-                <prop key="mail.smtp.auth">true</prop>
-                <prop key="mail.smtp.starttls.enable">true</prop>
-            </props>
-        </property>
+        <!--<property name="javaMailProperties">-->
+            <!--<props>-->
+                <!--<prop key="mail.smtp.auth">true</prop>-->
+                <!--<prop key="mail.smtp.starttls.enable">true</prop>-->
+            <!--</props>-->
+        <!--</property>-->
 
     </bean>
 
